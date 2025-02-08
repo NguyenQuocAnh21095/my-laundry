@@ -1,0 +1,12 @@
+1. Tạo bảng users
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    alias_name VARCHAR(255) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password TEXT, -- Mật khẩu sẽ được hash nên dùng TEXT
+    branch INT, -- Có thể dùng FOREIGN KEY nếu có bảng branches
+    role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'staff')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
