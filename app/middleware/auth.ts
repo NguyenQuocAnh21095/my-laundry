@@ -17,7 +17,8 @@ export function verifyAuth(req: NextRequest) {
         }
 
         const token = authHeader.split(" ")[1];
-        const decoded = jwt.verify(token, SECRET_KEY) as DecodedToken;
+        const decoded = jwt.verify(token, SECRET_KEY, { algorithms: ["HS256"] }) as DecodedToken;
+        // console.log(typeof decoded);
 
         return decoded;
     } catch (err) {

@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
         let result;
         if (user.role === "admin") {
             // Admin lấy danh sách tất cả user
-            result = await pool.query("SELECT id, alias_name, username, role, branch, created_at FROM users");
+            result = await pool.query("SELECT id, alias_name, username, role, branch, created_at FROM users ORDER BY role");
         } else {
             // User thường chỉ xem được chính nó
             result = await pool.query("SELECT id, alias_name, username, role, branch, created_at FROM users WHERE id = $1", [user.id]);

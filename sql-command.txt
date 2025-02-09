@@ -9,4 +9,20 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+2. Tạo bảng products
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL,
+    product_code VARCHAR(50) UNIQUE NOT NULL,
+    unit_price INT NOT NULL CHECK (unit_price >= 0),
+    branch_id INT NOT NULL,
+    image TEXT
+);
 
+3. Tạo bảng branches
+CREATE TABLE branches (
+    id SERIAL PRIMARY KEY,
+    branch_name VARCHAR(255) NOT NULL,
+    alias_branch VARCHAR(255),
+    address TEXT
+);

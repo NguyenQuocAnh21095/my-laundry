@@ -32,7 +32,7 @@ export async function POST(req: Request) {
         const branch = user.role === "admin" ? 0 : user.branch;
 
         // Tạo token JWT
-        const token = jwt.sign({ id: user.id, role: user.role, branch }, SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user.id, role: user.role, branch }, SECRET_KEY, { algorithm: "HS256", expiresIn: "1h" });
 
         return NextResponse.json({
             token,
