@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
-import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
+import {PlusIcon} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import jwt from "jsonwebtoken";
 import {useRouter} from "next/navigation";
@@ -19,6 +19,14 @@ export type Branch = {
     branch_name: string;
 };
 
+interface DecodedToken {
+    id: number;
+    role: string;
+    branch: number;
+    iat?: number;
+    exp?: number;
+}
+
 const SECRET_KEY = process.env.JWT_SECRET || "supersecret";
 
 const ProductsPage = () => {
@@ -33,14 +41,6 @@ const ProductsPage = () => {
     const [role, setRole] = useState<string>("");
     const router = useRouter();
 
-    interface DecodedToken {
-        id: number;
-        role: string;
-        branch: number;
-        iat?: number;
-        exp?: number;
-    }
-
     // Lấy role từ localStorage
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -49,19 +49,20 @@ const ProductsPage = () => {
             router.push("/login");
         } else {
             try {
+                setLoading(true);
                 // Nếu có token, giải mã JWT và lấy thông tin user
                 const decoded = jwt.verify(token, SECRET_KEY, { algorithms: ["HS256"] }) as DecodedToken;
                 // setDebugLog("hello");
-                if (decoded) {
+                if (!decoded) {
                     // Lưu thông tin người dùng sau khi giải mã
-                    setRole(decoded.role);
+                    router.push("/login");
                 } else {
-                    setRole(""); // Nếu giải mã không hợp lệ
+                    setRole(decoded.role);
                 }
             } catch (err) {
                 // Nếu có lỗi khi giải mã token, có thể là token đã hết hạn hoặc sai
                 console.error("Token is invalid or expired.", err, token, SECRET_KEY);
-                setRole(""); // Đặt lại thông tin user nếu token không hợp lệ
+                router.push("/login");
             } finally {
                 setLoading(false); // Set loading to false sau khi xử lý xong
             }
@@ -139,8 +140,8 @@ const ProductsPage = () => {
 
     return (
         <div className="products-container md:p-4 text-black">
-            <h1 className="text-2xl font-bold px-2">Hàng Hóa</h1>
-
+            <h1 className="text-2xl font-bold px-2">Dịch vụ</h1>
+            <div>
             {/* Search */}
             <div className="search-section mb-1 px-2 h-8">
                 <input
@@ -223,6 +224,16 @@ const ProductsPage = () => {
                     ))}
                 </div>
             )}
+            {/* Nút Floating */}
+            {role === "admin"  &&(
+                <button
+                onClick={() => router.push("/dashboard/products/create-product")}
+                className="flex fixed bottom-16 right-4 md:right-16 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition"
+            >
+                <PlusIcon className="w-6 h-6"/>
+                <div className="hidden md:block">Thêm</div>
+            </button>)}
+            </div>
         </div>
     );
 };

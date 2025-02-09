@@ -6,6 +6,13 @@ import jwt from "jsonwebtoken";
 import Link from "next/link";
 
 const SECRET_KEY = process.env.JWT_SECRET || "supersecret";
+interface DecodedToken {
+    id: number;
+    role: string;
+    branch: number;
+    iat?: number;
+    exp?: number;
+}
 
 const DashboardPage = () => {
     const [user, setUser] = useState<string | null>(null); // Thay state thành string | null
@@ -13,14 +20,7 @@ const DashboardPage = () => {
     // const [debugLog, setDebugLog] = useState<string>('');
     const router = useRouter();
 
-    interface DecodedToken {
-        id: number;
-        role: string;
-        branch: number;
-        iat?: number;
-        exp?: number;
-    }
-
+    //Kiem tra token valid
     useEffect(() => {
         const token = localStorage.getItem("token");
 
@@ -53,7 +53,7 @@ const DashboardPage = () => {
     }
 
     return (
-        <div className="dashboard-container p-6">
+        <div className="dashboard-container p-6 text-black">
             <h1 className="text-2xl font-bold">Welcome to your Dashboard</h1>
             {user ? (
                 <p>Hello, User ID: {user}!</p>

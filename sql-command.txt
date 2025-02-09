@@ -26,3 +26,33 @@ CREATE TABLE branches (
     alias_branch VARCHAR(255),
     address TEXT
 );
+
+
+// Fetch danh sách branches
+    useEffect(() => {
+        const fetchBranches = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await fetch(`/api/branches`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+                if (data.error) {
+                    setError(data.error);
+                } else {
+                    setBranches(data.branches);
+                    if (data.branches.length === 1) {
+                        setBranchId(data.branches[0].id); // Nếu chỉ có 1 branch, gán mặc định
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching branches:", err);
+                setError("Error fetching branches.");
+            }
+        };
+
+        fetchBranches();
+    }, []);
