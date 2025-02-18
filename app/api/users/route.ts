@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     try {
         // Xác thực user từ token
         const user = verifyAuth(req) as User;
-        if (!user || user.role !== "admin") {
+        if (!user.id || user.role !== "admin") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
         const user = verifyAuth(req) as User;
 
         // Nếu không có token, chặn truy cập
-        if (!user) {
+        if (!user.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
             result = await pool.query("SELECT id, alias_name, username, role, branch, created_at FROM users ORDER BY role");
         } else {
             // User thường chỉ xem được chính nó
-            result = await pool.query("SELECT id, alias_name, username, role, branch, created_at FROM users WHERE id = $1", [user.id]);
+            result = await pool.query("SELECT id, alias_name, username, role, branch, created_at FROM users WHERE branch = $1", [user.branch]);
         }
 
         return NextResponse.json({ users: result.rows });

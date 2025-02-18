@@ -1,8 +1,6 @@
-import { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+const nextConfig = {
     env: {
-        JWT_SECRET: process.env.JWT_SECRET,
+        JWT_SECRET: process.env.JWT_SECRET, // Nếu cần dùng, nhưng nên lưu vào .env thay vì config
     },
 };
 

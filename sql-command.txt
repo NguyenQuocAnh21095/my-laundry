@@ -27,32 +27,72 @@ CREATE TABLE branches (
     address TEXT
 );
 
+4. Tạo bảng invoices
+CREATE TABLE invoices (
+    id SERIAL PRIMARY KEY,
+    invoice_name VARCHAR(50) NOT NULL UNIQUE,
+    customer_id INT NOT NULL,
+    branch_id INT NOT NULL,
+    amount INT NOT NULL,
+    paid_amount INT NOT NULL DEFAULT 0,
+    pay_method INT,
+    status_id INT NOT NULL,
+    created_by INT NOT NULL,
+    confirmed_by INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+Thêm cột discount
 
-// Fetch danh sách branches
-    useEffect(() => {
-        const fetchBranches = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const res = await fetch(`/api/branches`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+5. Bảng customers
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(125) UNIQUE NOT NULL,
+    customer_phone VARCHAR(15),
+    customer_address TEXT,
+    branch_id INT NOT NULL
+);
 
-                const data = await res.json();
-                if (data.error) {
-                    setError(data.error);
-                } else {
-                    setBranches(data.branches);
-                    if (data.branches.length === 1) {
-                        setBranchId(data.branches[0].id); // Nếu chỉ có 1 branch, gán mặc định
-                    }
-                }
-            } catch (err) {
-                console.error("Error fetching branches:", err);
-                setError("Error fetching branches.");
-            }
-        };
+6. Bảng statuses
+CREATE TABLE statuses (
+    id SERIAL PRIMARY KEY,
+    status_name VARCHAR(50)
+);
 
-        fetchBranches();
-    }, []);
+7. Bảng pay_methods
+CREATE TABLE pay_methods (
+    id SERIAL PRIMARY KEY,
+    method_name VARCHAR(50)
+);
+
+8. Bảng invoice_coworkers
+CREATE TABLE invoice_coworkers (
+    id SERIAL PRIMARY KEY,
+    invoice_id INT,
+    user_id INT
+);
+
+9. Bảng invoice_items
+ALTER TABLE invoice_items
+ALTER COLUMN quantity TYPE DECIMAL(10,2);
+
+
+10. Tạo trigger, function tạo tên cho đơn hàng - đã bỏ cách này
+-- Tạo function để tự động sinh `invoice_name`
+CREATE OR REPLACE FUNCTION generate_invoice_name()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Lấy ngày hiện tại theo định dạng DDMMYY
+    NEW.invoice_name := CONCAT(
+        'DH',
+        TO_CHAR(NOW(), 'DDMMYY'), -- Ngày hiện tại (VD: 170224)
+        LPAD(nextval('invoices_id_seq')::TEXT, 4, '0')  -- Lấy ID tự tăng và thêm số 0
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Tạo trigger gọi function khi insert
+CREATE TRIGGER set_invoice_name
+BEFORE INSERT ON invoices
+FOR EACH ROW
+EXECUTE FUNCTION generate_invoice_name();

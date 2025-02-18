@@ -228,7 +228,7 @@ const ProductsPage = () => {
             {role === "admin"  &&(
                 <button
                 onClick={() => router.push("/dashboard/products/create-product")}
-                className="flex fixed bottom-16 right-4 md:right-16 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition"
+                className="flex fixed bottom-16 right-4 md:right-16 bg-blue-600 text-white p-4 md:pr-6 rounded-full shadow-lg hover:bg-blue-700 transition"
             >
                 <PlusIcon className="w-6 h-6"/>
                 <div className="hidden md:block">Thêm</div>

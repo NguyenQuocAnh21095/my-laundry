@@ -14,7 +14,7 @@ export default function DashboardLayout({
                 {children}
             </div>
             {/* Sidebar */}
-            <div className="flex w-full bg-white text-white p-1 md:flex md:flex-col md:p-4 md:w-64 md:space-y-4
+            <div className="flex w-full bg-white text-gray-500 md:flex md:flex-col md:p-4 md:w-64 md:space-y-4
                     fixed bottom-0 md:static md:h-full">
                 <NavLinks/>
 
