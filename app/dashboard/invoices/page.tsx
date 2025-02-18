@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from "react";
+import {useState, useEffect, useCallback} from "react";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import dayjs from "dayjs";
@@ -61,7 +61,7 @@ export default function InvoicesPage() {
                 setLoading(false);
             }
         }
-    }, []);
+    }, [router]);
 
     useEffect(() => {
         const fetchBranches = async () => {
@@ -84,11 +84,7 @@ export default function InvoicesPage() {
         fetchBranches();
     }, []);
 
-    useEffect(() => {
-        fetchInvoices();
-    }, [search, sort, branch, startDate, endDate]);
-
-    const fetchInvoices = async () => {
+    const fetchInvoices = useCallback(async () => {
         try {
             const params = new URLSearchParams({
                 search,
@@ -108,7 +104,11 @@ export default function InvoicesPage() {
         } catch (error) {
             console.error("Error fetching invoices:", error);
         }
-    };
+    }, [search, sort, branch, startDate, endDate]);
+
+    useEffect(() => {
+        fetchInvoices();
+    }, [fetchInvoices]);
 
     const handleDateFilterChange = (value: string) => {
         setDateFilter(value);

@@ -139,7 +139,7 @@ const CreateOrder = () => {
                 setLoading(false); // Set loading to false sau khi xử lý xong
             }
         }
-    }, []);
+    }, [router]);
     // Debounce search Product
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -216,38 +216,39 @@ const CreateOrder = () => {
         fetchBranches();
         fetchUsers();
     }, []);
-
-    const fetchProducts = async () => {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-
-        try {
-            const [criteria, order] = sortField.split("+");
-            const res = await fetch(`/api/products?search=${debouncedSearchProduct}&criteria=${criteria}&order=${order}&branch=${branch}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            const data = await res.json();
-            if (data.error) {
-                setError(data.error);
-            } else {
-                setProducts(data.products);
-            }
-        } catch (err) {
-            console.error("Error fetching products:", err);
-            setError("Error fetching products.");
-        } finally {
-            setLoading(false);
-        }
-    };
-    //FetchProducts
+    // Lấy danh sách products
     useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            const token = localStorage.getItem("token");
+
+            try {
+                const [criteria, order] = sortField.split("+");
+                const res = await fetch(`/api/products?search=${debouncedSearchProduct}&criteria=${criteria}&order=${order}&branch=${branch}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+                if (data.error) {
+                    setError(data.error);
+                } else {
+                    setProducts(data.products);
+                }
+            } catch (err) {
+                console.error("Error fetching products:", err);
+                setError("Error fetching products.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (branch !== 0 || role === "admin") {
             fetchProducts();
         }
-    }, [debouncedSearchProduct, sortField, branch, role]);
+    }, [debouncedSearchProduct, sortField, branch, role]); // ✅ Không còn cảnh báo
+
     //Xử lý debounce
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -565,7 +566,7 @@ const CreateOrder = () => {
                                         <div className="flex items-center">
                                         <div className="font-bold mr-2">Tổng tiền hàng:
                                         </div>
-                                            <div className="border border-blue-500 px-2 rounded-md text-blue-500 my-1"> {getTotalQuantity(selectedProducts)}</div>
+                                            <div className="border border-blue-500 px-2 rounded-md text-blue-500 my-1"> {getTotalQuantity(selectedProducts).toFixed(2)}</div>
                                         </div>
                                         <div
                                             className="text-blue-500 font-bold text-xl">{getTotalPrice(selectedProducts).toLocaleString("vi-VN")} đ
@@ -793,7 +794,7 @@ const CreateOrder = () => {
                                 </div>
                                 <div className="flex justify-between px-2 rounded-md">
                                     <p>Giảm giá (%): </p>
-                                    <input type="number" value={discount} min={0} onChange={(e) => setDiscount(Number(e.target.value))} className="text-right"/>
+                                    <input type="number" value={discount} min={0} onChange={(e) => setDiscount(Number(e.target.value))} className="border border-green-500 rounded-md text-center max-w-20"/>
                                 </div>
                                 <div className="flex justify-between px-2 rounded-md font-bold">
                                     <p>Khách cần trả: </p>

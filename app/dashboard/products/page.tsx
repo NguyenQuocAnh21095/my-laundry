@@ -67,7 +67,7 @@ const ProductsPage = () => {
                 setLoading(false); // Set loading to false sau khi xử lý xong
             }
         }
-    }, []);
+    }, [router]);
 
     // Debounce search
     useEffect(() => {
@@ -106,33 +106,32 @@ const ProductsPage = () => {
         fetchBranches();
     }, []);
 
-    const fetchProducts = async () => {
-        setLoading(true);
-        const token = localStorage.getItem("token");
-
-        try {
-            const [criteria, order] = sortField.split("+");
-            const res = await fetch(`/api/products?search=${debouncedSearch}&criteria=${criteria}&order=${order}&branch=${branch}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            const data = await res.json();
-            if (data.error) {
-                setError(data.error);
-            } else {
-                setProducts(data.products);
-            }
-        } catch (err) {
-            console.error("Error fetching products:", err);
-            setError("Error fetching products.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            const token = localStorage.getItem("token");
+
+            try {
+                const [criteria, order] = sortField.split("+");
+                const res = await fetch(`/api/products?search=${debouncedSearch}&criteria=${criteria}&order=${order}&branch=${branch}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await res.json();
+                if (data.error) {
+                    setError(data.error);
+                } else {
+                    setProducts(data.products);
+                }
+            } catch (err) {
+                console.error("Error fetching products:", err);
+                setError("Error fetching products.");
+            } finally {
+                setLoading(false);
+            }
+        };
         if (branch !== 0 || role === "admin") {
             fetchProducts();
         }

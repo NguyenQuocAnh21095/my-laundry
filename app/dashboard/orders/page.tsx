@@ -62,7 +62,7 @@ export default function OrdersPage() {
                 setLoading(false);
             }
         }
-    }, []);
+    }, [router]);
 
     useEffect(() => {
         const fetchBranches = async () => {
@@ -86,30 +86,30 @@ export default function OrdersPage() {
     }, []);
 
     useEffect(() => {
-        fetchInvoices();
-    }, [search, sort, branch, startDate, endDate]);
+        const fetchInvoices = async () => {
+            try {
+                const params = new URLSearchParams({
+                    search,
+                    sort,
+                    branch_id: branch.toString(),
+                    status_id: "1",
+                    startDate,
+                    endDate
+                });
+                const token = localStorage.getItem("token");
+                const res = await fetch(`/api/orders?${params.toString()}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (!res.ok) throw new Error("Failed to fetch invoices");
+                const data = await res.json();
+                setInvoices(data.invoices);
+            } catch (error) {
+                console.error("Error fetching invoices:", error);
+            }
+        };
 
-    const fetchInvoices = async () => {
-        try {
-            const params = new URLSearchParams({
-                search,
-                sort,
-                branch_id: branch.toString(),
-                status_id: "1",
-                startDate,
-                endDate
-            });
-            const token = localStorage.getItem("token");
-            const res = await fetch(`/api/orders?${params.toString()}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) throw new Error("Failed to fetch invoices");
-            const data = await res.json();
-            setInvoices(data.invoices);
-        } catch (error) {
-            console.error("Error fetching invoices:", error);
-        }
-    };
+        fetchInvoices(); // Gọi hàm luôn
+    }, [search, sort, branch, startDate, endDate]); // Không còn cảnh báo thiếu dependency
 
     const handleDateFilterChange = (value: string) => {
         setDateFilter(value);
