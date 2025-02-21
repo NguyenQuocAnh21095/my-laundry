@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import dayjs from "dayjs";
 import {PlusIcon} from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 const SECRET_KEY = process.env.JWT_SECRET || "supersecret";
 
@@ -21,6 +22,7 @@ export type Branch = {
 };
 
 export type InvoiceOrder = {
+    id: number;
     customer_name: string;
     invoice_name: string;
     branch_id: number;
@@ -246,7 +248,8 @@ export default function OrdersPage() {
                     <div className="px-2 space-y-1 max-h-[75vh] overflow-y-auto bg-gray-200">
                         {invoices.length > 0 ? (
                             invoices.map((inv) => (
-                                <div key={inv.invoice_name}
+                                <Link key={inv.invoice_name}
+                                      href={`order-detail/${inv.id}`}
                                      className="flex items-center justify-between w-full rounded-md bg-white p-1 shadow-md">
                                     <div className="flex flex-col">
                                         <p><strong>{inv.customer_name}</strong></p>
@@ -260,7 +263,7 @@ export default function OrdersPage() {
                                         <p><strong>{inv.invoice_amount.toLocaleString()}</strong></p>
                                         <p className="bg-orange-200 rounded-md text-orange-600 px-1">{inv.status_name}</p>
                                     </div>
-                                </div>
+                                </Link>
                             ))
                         ) : (
                             <p className="px-2 text-gray-500">Không có hóa đơn nào.</p>

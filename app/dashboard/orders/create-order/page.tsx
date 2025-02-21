@@ -352,7 +352,7 @@ const CreateOrder = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const res = await fetch(`/api/invoice-name`, {
+            const res = await fetch(`/api/invoice-name?branch_id=${branch.toString()}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -362,7 +362,7 @@ const CreateOrder = () => {
             if (dataRes.error) {
                 console.log(dataRes.error);
             }
-            const invoice_name = dataRes.invoice_name
+            const invoice_name = dataRes.invoice_name;
 
             const response = await fetch('/api/orders', {
                 method: 'POST',
@@ -794,11 +794,17 @@ const CreateOrder = () => {
                                 </div>
                                 <div className="flex justify-between px-2 rounded-md">
                                     <p>Giảm giá (%): </p>
-                                    <input type="number" value={discount} min={0} onChange={(e) => setDiscount(Number(e.target.value))} className="border border-green-500 rounded-md text-center max-w-20"/>
+                                    <input type="number" value={discount} min={0}
+                                           onChange={(e) => setDiscount(Number(e.target.value))}
+                                           className="border border-green-500 rounded-md text-center max-w-20"/>
+                                </div>
+                                <div className="flex justify-between px-2 rounded-md font-bold">
+                                    <p>Số tiền giảm </p>
+                                    <p>{(getTotalPrice(selectedProducts) * discount / 100).toLocaleString("vi-VN")}</p>
                                 </div>
                                 <div className="flex justify-between px-2 rounded-md font-bold">
                                     <p>Khách cần trả: </p>
-                                    <p>{(getTotalPrice(selectedProducts)*(1-discount/100)).toLocaleString("vi-VN")}</p>
+                                    <p>{(getTotalPrice(selectedProducts) * (1 - discount / 100)).toLocaleString("vi-VN")}</p>
                                 </div>
                                 <div className="flex justify-between px-2 rounded-md">
                                     <p>Khách đã trả: </p>
@@ -844,8 +850,6 @@ const CreateOrder = () => {
                             ) : (
                                 <div className="bg-white p-2 rounded-md">Chi nhánh {branch}</div>
                             )}
-
-
 
                         </div>
                         {/*Button điều hướng */}

@@ -45,8 +45,8 @@ const UsersPage = () => {
     }, []); // Fetch lại khi debounce search hoặc sort thay đổi
 
     return (
-        <div className="users-container p-4">
-            <h1 className="text-2xl font-bold">Users</h1>
+        <div className="users-container p-4 text-black">
+            <h1 className="text-2xl font-bold mb-4">Users</h1>
             {/* Error Message */}
             {error && <div className="error-message text-red-500">{error}</div>}
 
@@ -54,7 +54,7 @@ const UsersPage = () => {
             {loading ? (
                 <div>Loading...</div>
             ) : (
-                <div className="product-list space-y-2 max-h-[75vh] overflow-y-auto bg-red-500">
+                <div className="product-list space-y-1 max-h-[75vh] overflow-y-auto">
                     {users.map((user: User) => (
                         <div key={user.id}
                              className="product-item flex items-center justify-between w-full rounded-md bg-white p-2 shadow-md">

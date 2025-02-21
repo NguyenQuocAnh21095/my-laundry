@@ -41,7 +41,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-container w-full max-w-sm mx-auto p-6 bg-white shadow-md rounded-lg">
+        <div className="login-container flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 text-black">
             <h1 className="text-center text-2xl font-bold mb-4">Login</h1>
             {error && <div className="error-message text-red-500 mb-4">{error}</div>}
             <form onSubmit={handleSubmit}>

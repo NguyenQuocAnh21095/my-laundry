@@ -13,22 +13,30 @@ export async function GET(req: NextRequest) {
         // Xác thực user từ token
         const user = verifyAuth(req) as User;
 
-        // Nếu không có token, chặn truy cập
         if (!user.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '').slice(2); // Format ngày: DDMMYY
+        // Lấy branch_id từ query parameters
+        const { searchParams } = new URL(req.url);
+        const branch_id = searchParams.get("branch_id");
 
-        // Truy vấn database để lấy số thứ tự lớn nhất đã có trong ngày hôm đó
+        if (!branch_id || !["1", "2"].includes(branch_id)) {
+            return NextResponse.json({ error: "Invalid branch_id" }, { status: 400 });
+        }
+
+        const year = new Date().getFullYear().toString().slice(-2); // Lấy YY từ năm hiện tại
+
+        // Truy vấn database để lấy số thứ tự lớn nhất trong năm
         const result = await pool.query(
-            `SELECT COALESCE(MAX(invoice_name), 'DH${today}0000') AS last_invoice FROM invoices WHERE invoice_name LIKE $1`,
-            [`DH${today}%`]
+            `SELECT COALESCE(MAX(invoice_name), 'CN${branch_id}${year}00000') AS last_invoice 
+             FROM invoices WHERE invoice_name LIKE $1`,
+            [`CN${branch_id}${year}%`]
         );
 
         const lastInvoice = result.rows[0].last_invoice;
-        const lastNumber = parseInt(lastInvoice.slice(-4)) + 1;
-        const newInvoiceName = `DH${today}${lastNumber.toString().padStart(4, '0')}`;
+        const lastNumber = parseInt(lastInvoice.slice(-5)) + 1;
+        const newInvoiceName = `CN${branch_id}${year}${lastNumber.toString().padStart(5, '0')}`;
 
         return NextResponse.json({ invoice_name: newInvoiceName });
     } catch (error) {

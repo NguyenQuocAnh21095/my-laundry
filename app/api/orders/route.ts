@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
 
         const query = `
             SELECT 
+                i.id,
                 c.customer_name, 
                 i.invoice_name,
                 i.branch_id,

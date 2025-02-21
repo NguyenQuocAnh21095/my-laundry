@@ -3,6 +3,7 @@ import {useState, useEffect, useCallback} from "react";
 import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 const SECRET_KEY = process.env.JWT_SECRET || "supersecret";
 
@@ -20,6 +21,7 @@ export type Branch = {
 };
 
 export type InvoiceOrder = {
+    id: number;
     customer_name: string;
     invoice_name: string;
     branch_id: number;
@@ -245,7 +247,9 @@ export default function InvoicesPage() {
                     <div className="px-2 space-y-1 max-h-[75vh] overflow-y-auto bg-gray-200">
                         {invoices.length > 0 ? (
                             invoices.map((inv) => (
-                                <div key={inv.invoice_name} className="flex items-center justify-between w-full rounded-md bg-white p-1 shadow-md">
+                                <Link key={inv.invoice_name}
+                                      href={`invoice-detail/${inv.id}`}
+                                      className="flex items-center justify-between w-full rounded-md bg-white p-1 shadow-md">
                                     <div className="flex flex-col">
                                         <p><strong>{inv.customer_name}</strong></p>
                                         <p>{dayjs(inv.created_at).format("DD/MM/YYYY HH:mm")} - {inv.invoice_name}</p>
@@ -256,7 +260,7 @@ export default function InvoicesPage() {
                                         <p><strong>{inv.invoice_amount.toLocaleString()}</strong></p>
                                         <p className="bg-green-200 rounded-md text-green-600 px-1">{inv.status_name}</p>
                                     </div>
-                                </div>
+                                </Link>
                             ))
                         ) : (
                             <p className="px-2 text-gray-500">Không có hóa đơn nào.</p>
